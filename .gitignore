@@ -1,0 +1,16 @@
+node_modules
+dist
+out
+.DS_Store
+*.log*
+build
+.vscode
+
+.env
+.env.*
+*.env
+
+chat.db
+.idea
+
+*.db

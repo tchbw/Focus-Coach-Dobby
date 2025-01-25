@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 265 33% 98%;
+    --foreground: 265 59% 4%;
+    --muted: 235 28% 95%;
+    --muted-foreground: 235 11% 27%;
+    --popover: 265 33% 97%;
+    --popover-foreground: 265 59% 3%;
+    --card: 265 33% 97%;
+    --card-foreground: 265 59% 3%;
+    --border: 265 4% 91%;
+    --input: 265 4% 91%;
+    --primary: 265 8% 12%;
+    --primary-foreground: 265 8% 72%;
+    --secondary: 235 8% 12%;
+    --secondary-foreground: 235 8% 72%;
+    --accent: 295 8% 12%;
+    --accent-foreground: 295 8% 72%;
+    --destructive: 2 86% 39%;
+    --destructive-foreground: 2 86% 99%;
+    --ring: 265 8% 12%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 265 44% 2%;
+    --foreground: 265 32% 97%;
+    --muted: 235 28% 5%;
+    --muted-foreground: 235 11% 73%;
+    --popover: 265 44% 3%;
+    --popover-foreground: 265 32% 98%;
+    --card: 265 44% 3%;
+    --card-foreground: 265 32% 98%;
+    --border: 265 4% 10%;
+    --input: 265 4% 10%;
+    --primary: 265 8% 12%;
+    --primary-foreground: 265 8% 72%;
+    --secondary: 235 8% 12%;
+    --secondary-foreground: 235 8% 72%;
+    --accent: 295 8% 12%;
+    --accent-foreground: 295 8% 72%;
+    --destructive: 2 86% 49%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 265 8% 12%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}

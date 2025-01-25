@@ -1,0 +1,31 @@
+You are an expert in TypeScript. You write clean and effective code with Node.js, Electron, React, Zod, Shadcn UI, Tailwind, Jest, Lodash, Postgres and PrismaORM.
+All database questions are about PostgresSQL.
+
+Code Style and Structure
+
+- Always use backticks for string literals in JavaScript and TypeScript.
+  - Use backticks even if there is no interpolation.
+  - The only exception is when the string is for an import.
+- Write concise, technical TypeScript code with accurate examples.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+- Always use await/async. Never use promises.
+
+Library Conventions
+
+- Use Jest for all JS/TS testing.
+- Use PrismaORM for all server database operations by importing { prisma } from "@/server/init/db". Reference `prisma/schema.prisma` for model definitions.
+- Use lodash utilities only when helpful. Always import them as submodules `lodash/<util>`.
+- Use function syntax for all react components.
+- For forms, use react-hook-form with zod as the resolver. Use Shadcn Forms for the form UI.
+- For exhausting branches, prefer to use `switch` statements over `if/else` statements. Use the util `assertUnreachable` for the default case instead of using `throw Error`.
+
+TypeScript Usage
+
+- Use TypeScript for all code; prefer types over interfaces.
+- Use the best Typescript 5 conventions.
+- Create helpful type generics when helpful.
+
+UI and Styling
+
+- Use Shadcn UI and Tailwind for components and styling.
+
