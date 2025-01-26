@@ -1,7 +1,15 @@
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import { StopEvent } from "@llamaindex/workflow";
 import { focusCoachWorkflow } from "@main/workflow";
-import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  shell,
+  Tray,
+  screen,
+} from "electron";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
 import { dobbyChatCompletion } from "../shared/init/dobby";
@@ -40,10 +48,12 @@ ipcMain.handle(`save:goal`, async (_, { goal }) => {
 async function createWindow(
   onClose: () => Promise<void>
 ): Promise<BrowserWindow> {
+  const { height, width } = screen.getPrimaryDisplay().workAreaSize;
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width,
+    height,
     frame: false, // Removes the default window frame
     transparent: true, // Enables transparency
     show: false,
