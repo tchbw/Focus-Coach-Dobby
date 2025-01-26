@@ -1,7 +1,9 @@
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
+import { focusCoachWorkflow } from "@main/workflow";
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
+import { StopEvent } from "@llamaindex/workflow";
 
 async function createWindow(): Promise<BrowserWindow> {
   // Create the browser window.
@@ -56,7 +58,24 @@ app.whenReady().then(async () => {
   //   return chatsConfigState;
   // });
 
-  await createWindow();
+  // await createWindow();
+  console.log(`Starting focus coach...`);
+  // const run = focusCoachWorkflow.run(new StartEvent({}));
+  // const run = focusCoachWorkflow.run(new StartEvent({})).with({
+  //   focusObjective: `focusing on work`,
+  //   lastSleepCompletedAt: null,
+  // });
+  const run = focusCoachWorkflow.run(`meow`);
+
+  for await (const event of run) {
+    if (event instanceof MessageEvent) {
+      const msg = (event as MessageEvent).data.msg;
+      console.log(`${msg}\n`);
+    } else if (event instanceof StopEvent) {
+      const result = (event as StopEvent<string>).data;
+      console.log(`Final code:\n`, result);
+    }
+  }
 
   // Update scheduled jobs to fetch from database
   // schedule.scheduleJob(`*/30 * * * * *`, async () => {
