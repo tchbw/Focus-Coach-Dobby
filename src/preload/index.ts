@@ -1,13 +1,11 @@
 import { electronAPI } from "@electron-toolkit/preload";
-import { contextBridge } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 
 // Custom APIs for renderer
 const api = {
-  // getChatConfiguration: async (): Promise<ChatsConfig> => {
-  //   return chatsConfigSchema.parse(
-  //     await ipcRenderer.invoke(`get-chat-configuration`)
-  //   );
-  // },
+  getDobbyViolationString: async (): Promise<string> => {
+    return await ipcRenderer.invoke(`get-dobby-violation-string`);
+  },
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

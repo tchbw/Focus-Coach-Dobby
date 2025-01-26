@@ -8,6 +8,7 @@ import { dobbyChatCompletion } from "../shared/init/dobby";
 
 let savedGoal: string | null = null;
 let tray: Tray | null = null;
+let dobbyFocusViolation = ``;
 
 // Add this before creating the window
 ipcMain.handle(`chat:completion`, async (_, { messages }) => {
@@ -18,6 +19,9 @@ ipcMain.handle(`chat:completion`, async (_, { messages }) => {
     console.error(`Error in chat completion:`, error);
     throw error;
   }
+});
+ipcMain.handle(`get-dobby-violation-string`, async () => {
+  return dobbyFocusViolation;
 });
 
 ipcMain.handle(`get:goal`, async () => {
@@ -160,6 +164,9 @@ app.whenReady().then(async () => {
   // await createWindow();
   console.log(`Starting focus coach...`);
   const run = focusCoachWorkflow.run(`start`).with({
+    setDobbyViolationString: (s: string) => {
+      dobbyFocusViolation = s;
+    },
     focusObjective: `focusing on work`,
     openDobbyWindow: createWindow,
   });

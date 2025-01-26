@@ -4,7 +4,7 @@ declare global {
   interface Window {
     electron: ElectronAPI;
     api: {
-      // getChatConfiguration: () => Promise<ChatsConfig>;
+      getDobbyViolationString: () => Promise<string>;
     };
   }
 }

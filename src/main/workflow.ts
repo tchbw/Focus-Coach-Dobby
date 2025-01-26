@@ -9,6 +9,7 @@ import { BrowserWindow } from "electron/main";
 import type { EmptyObject } from "type-fest";
 
 type Context = {
+  setDobbyViolationString: (s: string) => void;
   focusObjective: string;
   openDobbyWindow: (onClose: () => Promise<void>) => Promise<BrowserWindow>;
 };
@@ -58,6 +59,9 @@ const triggerDobby = async (
   ctx: HandlerContext<Context>,
   _ev: FocusViolationEvent
 ): Promise<FocusVerifiedEvent> => {
+  ctx.data.setDobbyViolationString(
+    `What a great night to watch the shooting stars. You should try making a wish and see what happens!`
+  );
   await ctx.data.openDobbyWindow(async () => {
     console.log(`Dobby window closed.`);
     ctx.sendEvent(new FocusViolationAcknowledgedEvent({}));
