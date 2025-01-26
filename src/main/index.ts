@@ -2,6 +2,7 @@ import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
+import ScreenshotProcessor from "./screenshot-processor";
 
 async function createWindow(): Promise<BrowserWindow> {
   // Create the browser window.
@@ -37,6 +38,16 @@ async function createWindow(): Promise<BrowserWindow> {
   return mainWindow;
 }
 
+async function processScreenshots() {
+  try {
+    const processor = new ScreenshotProcessor();
+    await processor.processExistingScreenshots(`coding transformer model`);
+    console.log(`Screenshot processing completed successfully`);
+  } catch (error) {
+    console.error(`Error processing screenshots:`, error);
+  }
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -51,31 +62,21 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  // Handlers
-  // ipcMain.handle(`get-chat-configuration`, async () => {
-  //   return chatsConfigState;
-  // });
-
+  // Create main window
   await createWindow();
 
-  // Update scheduled jobs to fetch from database
-  // schedule.scheduleJob(`*/30 * * * * *`, async () => {
-  //   const autoChats = await prisma.configuredAutomatedChat.findMany();
-  //   await processAutoMessages({
-  //     automatedChats: autoChats.map((c) => c.chatId),
-  //   });
-  // });
+  // Run screenshot processing in the background
+  processScreenshots();
 
-  app.on(`activate`, function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  app.on(`activate`, async () => {
+    // On macOS, recreate a window when the dock icon is clicked
+    if (BrowserWindow.getAllWindows().length === 0) {
+      await createWindow();
+    }
   });
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// Quit when all windows are closed, except on macOS
 app.on(`window-all-closed`, () => {
   if (process.platform !== `darwin`) {
     app.quit();
