@@ -3,6 +3,7 @@ import axios from "axios";
 
 import { config } from "dotenv";
 import path from "path";
+import { DOBBY_GOAL_PROMPT } from "./prompts";
 
 // Load environment variables from .env file
 config({ path: path.join(process.cwd(), `.env`) });
@@ -18,7 +19,7 @@ export const dobbyClient = axios.create({
 });
 
 export type DobbyMessage = {
-  role: `user` | `assistant`;
+  role: `user` | `assistant` | `system`;
   content: string;
 };
 
@@ -54,5 +55,21 @@ export async function dobbyChatCompletion(
     model,
     messages,
   });
+
   return response.data.choices[0].message.content;
+}
+
+export async function dobbyGoalViolation(
+  goal: string,
+  distractionTask: string
+): Promise<string> {
+  const response = await dobbyChatCompletion([
+    { role: `system`, content: DOBBY_GOAL_PROMPT },
+    {
+      role: `user`,
+      content: `The user's goal is ${goal} and you discovered them sneakily doing ${distractionTask}. Get them back on track to their goal with up to 4  sentences.`,
+    },
+  ]);
+
+  return response;
 }

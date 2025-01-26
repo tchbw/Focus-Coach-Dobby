@@ -5,6 +5,7 @@ import {
   WorkflowEvent,
 } from "@llamaindex/workflow";
 import { createScreenshot } from "@main/util/screen";
+import { dobbyGoalViolation } from "@shared/init/dobby";
 import { BrowserWindow } from "electron/main";
 import type { EmptyObject } from "type-fest";
 
@@ -59,9 +60,17 @@ const triggerDobby = async (
   ctx: HandlerContext<Context>,
   _ev: FocusViolationEvent
 ): Promise<FocusVerifiedEvent> => {
-  ctx.data.setDobbyViolationString(
-    `What a great night to watch the shooting stars. You should try making a wish and see what happens!`
+  console.log(
+    `Triggering Dobby...`,
+    ctx.data.focusObjective,
+    _ev.data.violationDescription
   );
+  const violationString = await dobbyGoalViolation(
+    ctx.data.focusObjective,
+    _ev.data.violationDescription
+  );
+
+  ctx.data.setDobbyViolationString(violationString);
   await ctx.data.openDobbyWindow(async () => {
     console.log(`Dobby window closed.`);
     ctx.sendEvent(new FocusViolationAcknowledgedEvent({}));

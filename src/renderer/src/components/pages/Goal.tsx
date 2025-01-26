@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Typewriter from "typewriter-effect";
-import { motion } from "motion/react";
 import { Button } from "@renderer/components/ui/button";
+import { DOBBY_INITIAL_MESSAGE, DOBBY_GOAL_PROMPT } from "@shared/init/prompts";
 
 function Goal(): React.ReactElement {
   const [input, setInput] = useState(``);
@@ -18,11 +18,11 @@ function Goal(): React.ReactElement {
           messages: [
             {
               role: `system`,
-              content: `You are a bad ass AI assistant serving as a couch on goal setting and workaholic. You think working hard is the elixir of life and a day well spent on productivity is goals.`,
+              content: DOBBY_INITIAL_MESSAGE,
             },
             {
               role: `user`,
-              content: `Ask the user what their goal is for today.`,
+              content: DOBBY_GOAL_PROMPT,
             },
           ],
         }
@@ -48,11 +48,11 @@ function Goal(): React.ReactElement {
       messages: [
         {
           role: `system`,
-          content: `You are a bad ass AI assistant serving as a couch on goal setting and workaholic. You think working hard is the elixir of life and a day well spent on productivity is goals.`,
+          content: DOBBY_INITIAL_MESSAGE,
         },
         {
           role: `user`,
-          content: `Ask the user what their goal is for today.`,
+          content: DOBBY_GOAL_PROMPT,
         },
         {
           role: `assistant`,

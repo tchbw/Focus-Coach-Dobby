@@ -34,6 +34,7 @@ ipcMain.handle(`save:goal`, async (_, { goal }) => {
   if (tray) {
     updateTray(tray);
   }
+  runWorkflow();
 });
 
 async function createWindow(
@@ -76,6 +77,27 @@ async function createWindow(
   }
 
   return mainWindow;
+}
+
+async function runWorkflow(): Promise<void> {
+  console.log(`Starting focus coach...`);
+  const run = focusCoachWorkflow.run(`start`).with({
+    setDobbyViolationString: (s: string) => {
+      dobbyFocusViolation = s;
+    },
+    focusObjective: savedGoal ?? `focusing on work`,
+    openDobbyWindow: createWindow,
+  });
+
+  for await (const event of run) {
+    if (event instanceof MessageEvent) {
+      const msg = (event as MessageEvent).data.msg;
+      console.log(`${msg}\n`);
+    } else if (event instanceof StopEvent) {
+      const result = (event as StopEvent<string>).data;
+      console.log(`Final code:\n`, result);
+    }
+  }
 }
 
 async function createGoalWindow(): Promise<BrowserWindow> {
@@ -162,24 +184,6 @@ app.whenReady().then(async () => {
   await createTray();
 
   // await createWindow();
-  console.log(`Starting focus coach...`);
-  const run = focusCoachWorkflow.run(`start`).with({
-    setDobbyViolationString: (s: string) => {
-      dobbyFocusViolation = s;
-    },
-    focusObjective: savedGoal ?? `focusing on work`,
-    openDobbyWindow: createWindow,
-  });
-
-  for await (const event of run) {
-    if (event instanceof MessageEvent) {
-      const msg = (event as MessageEvent).data.msg;
-      console.log(`${msg}\n`);
-    } else if (event instanceof StopEvent) {
-      const result = (event as StopEvent<string>).data;
-      console.log(`Final code:\n`, result);
-    }
-  }
 
   // Update scheduled jobs to fetch from database
   // schedule.scheduleJob(`*/30 * * * * *`, async () => {
