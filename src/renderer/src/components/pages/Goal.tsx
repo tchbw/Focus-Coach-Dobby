@@ -1,7 +1,6 @@
+import { Button } from "@renderer/components/ui/button";
 import { useEffect, useState } from "react";
 import Typewriter from "typewriter-effect";
-import { motion } from "motion/react";
-import { Button } from "@renderer/components/ui/button";
 
 function Goal(): React.ReactElement {
   const [input, setInput] = useState(``);
@@ -80,7 +79,7 @@ function Goal(): React.ReactElement {
   }
 
   return (
-    <div className="font-round flex min-h-screen items-center justify-center bg-[#fdf8e3] p-6">
+    <div className="flex min-h-screen items-center justify-center bg-[#fdf8e3] p-6 font-round">
       <div className="space-y-6">
         <div className="text-center">
           <h1 className="text-lg font-bold text-gray-900">

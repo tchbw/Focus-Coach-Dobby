@@ -4,7 +4,7 @@ import {
   Workflow,
   WorkflowEvent,
 } from "@llamaindex/workflow";
-import { createScreenshot } from "@main/util/screen";
+import ScreenshotProcessor, { createScreenshot } from "@main/util/screen";
 import { BrowserWindow } from "electron/main";
 import type { EmptyObject } from "type-fest";
 
@@ -45,13 +45,26 @@ const screenshotUserScreen = async (
 };
 
 const verifyFocus = async (
-  _: unknown,
-  _ev: ScreenshotEvent
+  ctx: HandlerContext<Context>,
+  ev: ScreenshotEvent
 ): Promise<FocusVerifiedEvent | FocusViolationEvent> => {
+  const screenshotProcessor = new ScreenshotProcessor();
+  const result = await screenshotProcessor.processScreenshot(
+    ctx.data.focusObjective,
+    ev.data.filePath
+  );
+  console.log("SCREENSHOT RESULT", result);
+  if (result.isDistracted) {
+    return new FocusViolationEvent({
+      violationDescription: result.distractionDescription,
+    });
+  } else {
+    return new FocusVerifiedEvent({});
+  }
   //   const prompt = `Give a thorough critique of the following joke: ${ev.data.screenshotPath}`;
   //   console.log(`Got file path: ${ev.data.filePath}`);
   //   const response = await llm.complete({ prompt });
-  return new FocusViolationEvent({ violationDescription: `Focus violation` });
+  // return new FocusViolationEvent({ violationDescription: `Focus violation` });
   // return new FocusVerifiedEvent({});
 };
 
