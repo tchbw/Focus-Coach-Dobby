@@ -181,9 +181,8 @@ app.whenReady().then(async () => {
 
   // await createWindow();
   console.log(`Starting focus coach...`);
-  const run = focusCoachWorkflow.run(`meow`).with({
+  const run = focusCoachWorkflow.run(`start`).with({
     focusObjective: `focusing on work`,
-    lastSleepCompletedAt: null,
     openDobbyWindow: createWindow,
   });
 

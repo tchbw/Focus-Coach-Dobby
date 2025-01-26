@@ -4,15 +4,12 @@ import {
   Workflow,
   WorkflowEvent,
 } from "@llamaindex/workflow";
-import type { EmptyObject } from "type-fest";
-import { desktopCapturer, screen } from "electron";
-import { writeFile, mkdirSync, existsSync } from "fs";
-import path from "path";
+import { createScreenshot } from "@main/util/screen";
 import { BrowserWindow } from "electron/main";
+import type { EmptyObject } from "type-fest";
 
 type Context = {
   focusObjective: string;
-  lastSleepCompletedAt: null | string;
   openDobbyWindow: (onClose: () => Promise<void>) => Promise<BrowserWindow>;
 };
 
@@ -26,10 +23,14 @@ export class FocusVerifiedEvent extends WorkflowEvent<EmptyObject> {}
 export class FocusViolationAcknowledgedEvent extends WorkflowEvent<EmptyObject> {}
 
 const sleepUntilNextFocusCheck = async (
-  _: unknown,
-  _ev: StartEvent<string> | FocusVerifiedEvent | FocusViolationAcknowledgedEvent
+  _ctx: HandlerContext<Context>,
+  ev: StartEvent<string> | FocusVerifiedEvent | FocusViolationAcknowledgedEvent
 ): Promise<SleepCompleteEvent> => {
-  await new Promise((resolve) => setTimeout(resolve, 5000)); // Sleep for 5 seconds
+  if (!(ev instanceof StartEvent)) {
+    console.log(`Sleeping before checking for focus...`);
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+
   return new SleepCompleteEvent({});
 };
 
@@ -37,49 +38,7 @@ const screenshotUserScreen = async (
   _: unknown,
   _ev: SleepCompleteEvent
 ): Promise<ScreenshotEvent> => {
-  // Ensure screenshots directory exists
-  const screenshotsDir = path.join(__dirname, `./screenshots`);
-  if (!existsSync(screenshotsDir)) {
-    mkdirSync(screenshotsDir, { recursive: true });
-  }
-
-  // Get primary display info
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.size;
-  const scaleFactor = primaryDisplay.scaleFactor;
-
-  // Get screen sources
-  const sources = await desktopCapturer.getSources({
-    types: [`screen`],
-    thumbnailSize: {
-      width: width * scaleFactor,
-      height: height * scaleFactor,
-    },
-  });
-
-  const primaryScreenSource = sources[0];
-
-  if (!primaryScreenSource) {
-    throw new Error(`Unable to find primary screen source.`);
-  }
-
-  // Get screenshot as base64 PNG
-  const screenshot = primaryScreenSource.thumbnail.toDataURL();
-  const screenshotBuffer = Buffer.from(screenshot.split(`,`)[1], `base64`);
-
-  // Generate unique filename with timestamp
-  const timestamp = new Date().toISOString().replace(/[:.]/g, `-`);
-  const screenshotPath = path.join(
-    screenshotsDir,
-    `screenshot-${timestamp}.png`
-  );
-
-  await new Promise<void>((resolve, reject) => {
-    writeFile(screenshotPath, screenshotBuffer, (err) => {
-      if (err) reject(err);
-      resolve();
-    });
-  });
+  const screenshotPath = await createScreenshot();
 
   return new ScreenshotEvent({ filePath: screenshotPath });
 };
