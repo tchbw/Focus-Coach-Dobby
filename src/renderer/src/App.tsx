@@ -1,15 +1,38 @@
 import im from "@renderer/assets/isabelle_mad.gif";
+import animalCrossingSound from "@renderer/assets/isabelle-talk.mp3";
+import shockedSound from "@renderer/assets/shocked.mp3";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { motion } from "motion/react";
+import { useEffect } from "react";
 import Typewriter from "typewriter-effect";
+import { Button } from "@renderer/components/ui/button";
 
 const queryClient = new QueryClient();
 
 function App(): JSX.Element {
+  useEffect(() => {
+    const playAudioSequence = async (): Promise<void> => {
+      const shockedAudio = new Audio(shockedSound);
+      const talkAudio = new Audio(animalCrossingSound);
+
+      try {
+        await shockedAudio.play();
+        await talkAudio.play();
+        // shockedAudio.addEventListener('ended', async () => {
+        //   await talkAudio.play();
+        // });
+      } catch (error) {
+        console.error(`Error playing audio:`, error);
+      }
+    };
+
+    playAudioSequence();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <>
-        <div className="flex h-screen flex-col items-center bg-black pb-12 font-round">
+        <div className="flex h-screen flex-col items-center pb-12 font-round">
           <motion.img
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -44,6 +67,16 @@ function App(): JSX.Element {
               </div>
             </div>
           </div>
+          <Button asChild size="xl">
+            <motion.button
+              className="absolute bottom-10 left-1/2 z-50 -translate-x-1/2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 5 }}
+            >
+              Apologize to Dobby
+            </motion.button>
+          </Button>
         </div>
       </>
     </QueryClientProvider>

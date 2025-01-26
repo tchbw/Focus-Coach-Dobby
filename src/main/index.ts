@@ -31,6 +31,8 @@ async function createWindow(): Promise<BrowserWindow> {
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
+    frame: false, // Removes the default window frame
+    transparent: true, // Enables transparency
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === `linux` ? { icon } : {}),
@@ -167,12 +169,17 @@ app.whenReady().then(async () => {
   //   return chatsConfigState;
   // });
 
-  await createWindow();
+  // await createWindow();
   await createGoalWindow();
   await createTray();
 
+  // await createWindow();
   console.log(`Starting focus coach...`);
-  const run = focusCoachWorkflow.run(`meow`);
+  const run = focusCoachWorkflow.run(`meow`).with({
+    focusObjective: `focusing on work`,
+    lastSleepCompletedAt: null,
+    openDobbyWindow: createWindow,
+  });
 
   for await (const event of run) {
     if (event instanceof MessageEvent) {

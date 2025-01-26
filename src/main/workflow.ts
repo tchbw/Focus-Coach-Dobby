@@ -1,12 +1,19 @@
-import { StartEvent, Workflow, WorkflowEvent } from "@llamaindex/workflow";
+import {
+  HandlerContext,
+  StartEvent,
+  Workflow,
+  WorkflowEvent,
+} from "@llamaindex/workflow";
 import type { EmptyObject } from "type-fest";
 import { desktopCapturer, screen } from "electron";
 import { writeFile, mkdirSync, existsSync } from "fs";
 import path from "path";
+import { BrowserWindow } from "electron/main";
 
 type Context = {
   focusObjective: string;
   lastSleepCompletedAt: null | string;
+  openDobbyWindow: (onClose: () => void) => Promise<BrowserWindow>;
 };
 
 // Create a custom event type
@@ -83,24 +90,27 @@ const screenshotUserScreen = async (
 const verifyFocus = async (
   _: unknown,
   ev: ScreenshotEvent
-): Promise<FocusVerifiedEvent> => {
+): Promise<FocusVerifiedEvent | FocusViolationEvent> => {
   console.log(`Verifying focus...`, ev);
 
   //   const prompt = `Give a thorough critique of the following joke: ${ev.data.screenshotPath}`;
   //   console.log(`Got file path: ${ev.data.filePath}`);
   //   const response = await llm.complete({ prompt });
-  return new FocusVerifiedEvent({});
+  return new FocusViolationEvent({ violationDescription: `Focus violation` });
+  // return new FocusVerifiedEvent({});
 };
 
 const triggerDobby = async (
-  _: unknown,
+  ctx: HandlerContext<Context>,
   _ev: FocusViolationEvent
-): Promise<FocusViolationAcknowledgedEvent> => {
+): Promise<void> => {
   console.log(`Triggering Dobby...`);
-
+  await ctx.data.openDobbyWindow(() => {
+    ctx.sendEvent(new FocusViolationAcknowledgedEvent({}));
+  });
   //   const prompt = `Give a thorough critique of the following joke: ${ev.data.joke}`;
   //   const response = await llm.complete({ prompt });
-  return new FocusViolationAcknowledgedEvent({});
+  // return new FocusViolationAcknowledgedEvent({});
 };
 
 const focusCoachWorkflow = new Workflow<Context, string, string>({
@@ -137,7 +147,7 @@ focusCoachWorkflow.addStep(
 focusCoachWorkflow.addStep(
   {
     inputs: [FocusViolationEvent],
-    outputs: [FocusViolationAcknowledgedEvent],
+    outputs: [],
   },
   triggerDobby
 );

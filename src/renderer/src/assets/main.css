@@ -16,8 +16,8 @@
     --card-foreground: 265 59% 3%;
     --border: 265 4% 91%;
     --input: 265 4% 91%;
-    --primary: 265 8% 12%;
-    --primary-foreground: 265 8% 72%;
+    --primary: #dd8530;
+    --primary-foreground: #482016;
     --secondary: 235 8% 12%;
     --secondary-foreground: 235 8% 72%;
     --accent: 295 8% 12%;
@@ -66,4 +66,14 @@
     -webkit-appearance: none;
     margin: 0;
   }
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  background-color: rgba(0, 0, 0, 0); /* Fully transparent */
+  overflow: hidden; /* Optional: prevent scrollbars */
+  height: 100%;
 }
