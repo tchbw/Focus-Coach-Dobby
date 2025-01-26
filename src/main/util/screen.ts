@@ -161,10 +161,11 @@ class ScreenshotProcessor {
   }
 
   private generateDistractionPrompt(goal: string): string {
-    return `Analyze this screenshot in the context of the goal: ${goal}. 
+    return `Analyze this screenshot in the context of the goal: ${goal}. Do not notice anything in the application bar, focus only on the main window onscreen.
+    
     Provide a JSON-formatted response with the following structure:
     {
-      "isDistracted": boolean, // Whether the user is distracted
+      "isDistracted": boolean, // Whether the user is using explicitly distracting websites and applications like Twitter, Youtube, etc. 
       "distractionDescription": string, // Detailed description of distraction
     }
     

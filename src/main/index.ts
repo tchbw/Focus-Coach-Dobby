@@ -34,7 +34,9 @@ ipcMain.handle(`save:goal`, async (_, { goal }) => {
   if (tray) {
     updateTray(tray);
   }
-  runWorkflow();
+  setTimeout(() => {
+    runWorkflow();
+  }, 10000);
 });
 
 async function createWindow(
