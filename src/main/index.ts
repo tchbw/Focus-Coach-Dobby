@@ -167,7 +167,7 @@ app.whenReady().then(async () => {
     setDobbyViolationString: (s: string) => {
       dobbyFocusViolation = s;
     },
-    focusObjective: `focusing on work`,
+    focusObjective: savedGoal ?? `focusing on work`,
     openDobbyWindow: createWindow,
   });
 
