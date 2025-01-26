@@ -49,6 +49,7 @@
     "electron-updater": "^6.1.7",
     "llamaindex": "^0.8.31",
     "lucide-react": "^0.453.0",
+    "motion": "^12.0.5",
     "node-schedule": "^2.1.1",
     "openai": "^4.69.0",
     "react-hook-form": "^7.53.1",
@@ -56,6 +57,7 @@
     "recharts": "^2.13.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
+    "typewriter-effect": "^2.21.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

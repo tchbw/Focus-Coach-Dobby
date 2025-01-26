@@ -58,13 +58,8 @@ app.whenReady().then(async () => {
   //   return chatsConfigState;
   // });
 
-  // await createWindow();
+  await createWindow();
   console.log(`Starting focus coach...`);
-  // const run = focusCoachWorkflow.run(new StartEvent({}));
-  // const run = focusCoachWorkflow.run(new StartEvent({})).with({
-  //   focusObjective: `focusing on work`,
-  //   lastSleepCompletedAt: null,
-  // });
   const run = focusCoachWorkflow.run(`meow`);
 
   for await (const event of run) {
