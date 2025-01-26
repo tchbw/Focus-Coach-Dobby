@@ -85,6 +85,7 @@ function App(): JSX.Element {
             alt="Isabelle looking mad"
             className="h-[360px] w-[360px] object-cover"
           />
+          <div className="text-2xl font-bold">Goal: {goal}</div>
           <div className="relative flex h-[360px] w-[720px] flex-none">
             <div className="animate-scaleUp relative flex h-full w-full scale-0 transform flex-col items-center justify-stretch">
               <div className="animate-blob absolute top-0 h-[75%] w-full origin-center rounded-[40%_40%_30%_30%/150%_150%_150%_150%] bg-[#fdf8e3]"></div>

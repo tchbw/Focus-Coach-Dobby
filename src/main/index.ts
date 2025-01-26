@@ -79,6 +79,8 @@ async function createGoalWindow(): Promise<BrowserWindow> {
     width: 550,
     height: 400,
     show: false,
+    frame: false, // Removes the default window frame
+    transparent: true, // Enables transparency
     autoHideMenuBar: true,
     ...(process.platform === `linux` ? { icon } : {}),
     webPreferences: {
