@@ -1,6 +1,6 @@
+import { Button } from "@renderer/components/ui/button";
 import { useEffect, useState } from "react";
 import Typewriter from "typewriter-effect";
-import { Button } from "@renderer/components/ui/button";
 import { DOBBY_INITIAL_MESSAGE, DOBBY_GOAL_PROMPT } from "@shared/init/prompts";
 
 function Goal(): React.ReactElement {

@@ -85,7 +85,7 @@ async function runWorkflow(): Promise<void> {
     setDobbyViolationString: (s: string) => {
       dobbyFocusViolation = s;
     },
-    focusObjective: savedGoal ?? `focusing on work`,
+    focusObjective: savedGoal ?? `focusing on coding work`,
     openDobbyWindow: createWindow,
   });
 
