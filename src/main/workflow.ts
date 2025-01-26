@@ -13,7 +13,7 @@ import { BrowserWindow } from "electron/main";
 type Context = {
   focusObjective: string;
   lastSleepCompletedAt: null | string;
-  openDobbyWindow: (onClose: () => void) => Promise<BrowserWindow>;
+  openDobbyWindow: (onClose: () => Promise<void>) => Promise<BrowserWindow>;
 };
 
 // Create a custom event type
@@ -29,7 +29,6 @@ const sleepUntilNextFocusCheck = async (
   _: unknown,
   _ev: StartEvent<string> | FocusVerifiedEvent | FocusViolationAcknowledgedEvent
 ): Promise<SleepCompleteEvent> => {
-  console.log(`Sleeping...`);
   await new Promise((resolve) => setTimeout(resolve, 5000)); // Sleep for 5 seconds
   return new SleepCompleteEvent({});
 };
@@ -38,8 +37,6 @@ const screenshotUserScreen = async (
   _: unknown,
   _ev: SleepCompleteEvent
 ): Promise<ScreenshotEvent> => {
-  console.log(`Taking screenshot...`);
-
   // Ensure screenshots directory exists
   const screenshotsDir = path.join(__dirname, `./screenshots`);
   if (!existsSync(screenshotsDir)) {
@@ -89,10 +86,8 @@ const screenshotUserScreen = async (
 
 const verifyFocus = async (
   _: unknown,
-  ev: ScreenshotEvent
+  _ev: ScreenshotEvent
 ): Promise<FocusVerifiedEvent | FocusViolationEvent> => {
-  console.log(`Verifying focus...`, ev);
-
   //   const prompt = `Give a thorough critique of the following joke: ${ev.data.screenshotPath}`;
   //   console.log(`Got file path: ${ev.data.filePath}`);
   //   const response = await llm.complete({ prompt });
@@ -103,14 +98,16 @@ const verifyFocus = async (
 const triggerDobby = async (
   ctx: HandlerContext<Context>,
   _ev: FocusViolationEvent
-): Promise<void> => {
-  console.log(`Triggering Dobby...`);
-  await ctx.data.openDobbyWindow(() => {
+): Promise<FocusVerifiedEvent> => {
+  await ctx.data.openDobbyWindow(async () => {
+    console.log(`Dobby window closed.`);
     ctx.sendEvent(new FocusViolationAcknowledgedEvent({}));
   });
+
+  await ctx.requireEvent(FocusViolationAcknowledgedEvent);
   //   const prompt = `Give a thorough critique of the following joke: ${ev.data.joke}`;
   //   const response = await llm.complete({ prompt });
-  // return new FocusViolationAcknowledgedEvent({});
+  return new FocusVerifiedEvent({});
 };
 
 const focusCoachWorkflow = new Workflow<Context, string, string>({
@@ -147,7 +144,7 @@ focusCoachWorkflow.addStep(
 focusCoachWorkflow.addStep(
   {
     inputs: [FocusViolationEvent],
-    outputs: [],
+    outputs: [FocusVerifiedEvent],
   },
   triggerDobby
 );
