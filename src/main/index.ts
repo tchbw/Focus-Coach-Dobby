@@ -1,19 +1,13 @@
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import { StopEvent } from "@llamaindex/workflow";
 import { focusCoachWorkflow } from "@main/workflow";
-import {
-  app,
-  BrowserWindow,
-  dialog,
-  ipcMain,
-  Menu,
-  shell,
-  Tray,
-} from "electron";
-import { readFileSync, writeFileSync } from "fs";
+import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from "electron";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
 import { dobbyChatCompletion } from "../shared/init/dobby";
+
+let savedGoal: string | null = null;
+let tray: Tray | null = null;
 
 // Add this before creating the window
 ipcMain.handle(`chat:completion`, async (_, { messages }) => {
@@ -23,6 +17,18 @@ ipcMain.handle(`chat:completion`, async (_, { messages }) => {
   } catch (error) {
     console.error(`Error in chat completion:`, error);
     throw error;
+  }
+});
+
+ipcMain.handle(`get:goal`, async () => {
+  return savedGoal;
+});
+
+ipcMain.handle(`save:goal`, async (_, { goal }) => {
+  console.log(`Saving goal:`, goal);
+  savedGoal = goal;
+  if (tray) {
+    updateTray(tray);
   }
 });
 
@@ -64,8 +70,8 @@ async function createWindow(): Promise<BrowserWindow> {
 
 async function createGoalWindow(): Promise<BrowserWindow> {
   const goalWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: 550,
+    height: 400,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === `linux` ? { icon } : {}),
@@ -96,58 +102,28 @@ async function createGoalWindow(): Promise<BrowserWindow> {
   return goalWindow;
 }
 
-async function createTray(): Promise<void> {
-  const tray = new Tray(join(__dirname, `../../resources/infinite.png`));
-  const userDataPath = join(app.getPath(`userData`), `tray-input.json`);
-
-  let savedInput = ``;
-  try {
-    const data = readFileSync(userDataPath, `utf8`);
-    savedInput = JSON.parse(data).input;
-  } catch {
-    writeFileSync(userDataPath, JSON.stringify({ input: `` }));
-  }
-
-  const testText = await dobbyChatCompletion([
-    { role: `user`, content: `I love you bb` },
+function updateTray(tray: Tray): void {
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: `Goal: ${savedGoal || `(none)`}`,
+    },
+    {
+      label: `Edit Input`,
+      click: async (): Promise<void> => {
+        await createGoalWindow();
+      },
+    },
+    { type: `separator` },
+    { label: `Exit`, role: `quit` },
   ]);
 
-  const updateContextMenu = (input: string): void => {
-    const contextMenu = Menu.buildFromTemplate([
-      {
-        label: `Current Input: ${input || `(empty)`}`,
-        enabled: false,
-      },
-      {
-        label: testText.choices[0].message.content,
-      },
-      { type: `separator` },
-      {
-        label: `Edit Input`,
-        click: async (): Promise<void> => {
-          const result = await dialog.showMessageBox({
-            type: "question",
-            buttons: ["Cancel", "OK"],
-            defaultId: 1,
-            title: "Input",
-            message: "Please enter your text:",
-            detail: "Additional details here",
-            // @ts-ignore it should work
-            inputField: "", // Note: This only works on macOS
-          });
+  tray.setContextMenu(contextMenu);
+}
 
-          console.log(result);
-        },
-      },
-      { type: `separator` },
-      { label: `Exit`, role: `quit` },
-    ]);
-
-    tray.setContextMenu(contextMenu);
-  };
-
+function createTray(): void {
+  tray = new Tray(join(__dirname, `../../resources/infinite.png`));
+  updateTray(tray);
   tray.setToolTip(`This is my application.`);
-  updateContextMenu(savedInput);
 }
 
 // This method will be called when Electron has finished

@@ -49,10 +49,10 @@ export const DEFAULT_MODEL = `accounts/sentientfoundation/models/dobby-mini-unhi
 export async function dobbyChatCompletion(
   messages: DobbyMessage[],
   model = DEFAULT_MODEL
-): Promise<DobbyResponse> {
+): Promise<string> {
   const response = await dobbyClient.post(`/chat/completions`, {
     model,
     messages,
   });
-  return response.data;
+  return response.data.choices[0].message.content;
 }
