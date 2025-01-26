@@ -36,7 +36,6 @@ module.exports = {
   ],
   rules: {
     "react/prop-types": `off`,
-    quotes: [`error`, `backtick`],
     "@typescript-eslint/no-unused-vars": [
       `error`,
       {

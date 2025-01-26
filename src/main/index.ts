@@ -1,7 +1,28 @@
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
-import { app, BrowserWindow, shell } from "electron";
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  Menu,
+  shell,
+  Tray,
+} from "electron";
+import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import icon from "../../resources/icon.png?asset";
+import { dobbyChatCompletion } from "../shared/init/dobby";
+
+// Add this before creating the window
+ipcMain.handle(`chat:completion`, async (_, { messages }) => {
+  try {
+    const result = await dobbyChatCompletion(messages);
+    return result;
+  } catch (error) {
+    console.error(`Error in chat completion:`, error);
+    throw error;
+  }
+});
 
 async function createWindow(): Promise<BrowserWindow> {
   // Create the browser window.
@@ -37,6 +58,94 @@ async function createWindow(): Promise<BrowserWindow> {
   return mainWindow;
 }
 
+async function createGoalWindow(): Promise<BrowserWindow> {
+  const goalWindow = new BrowserWindow({
+    width: 900,
+    height: 670,
+    show: false,
+    autoHideMenuBar: true,
+    ...(process.platform === `linux` ? { icon } : {}),
+    webPreferences: {
+      preload: join(__dirname, `../preload/index.js`),
+      sandbox: false,
+    },
+  });
+
+  goalWindow.on(`ready-to-show`, () => {
+    goalWindow.show();
+  });
+
+  goalWindow.webContents.setWindowOpenHandler((details) => {
+    shell.openExternal(details.url);
+    return { action: `deny` };
+  });
+
+  // Load the remote URL for development or the local html file for production
+  if (is.dev && process.env[`ELECTRON_RENDERER_URL`]) {
+    await goalWindow.loadURL(
+      `${process.env[`ELECTRON_RENDERER_URL`]}/input.html`
+    );
+  } else {
+    await goalWindow.loadFile(join(__dirname, `../renderer/input.html`));
+  }
+
+  return goalWindow;
+}
+
+async function createTray(): Promise<void> {
+  const tray = new Tray(join(__dirname, `../../resources/infinite.png`));
+  const userDataPath = join(app.getPath(`userData`), `tray-input.json`);
+
+  let savedInput = ``;
+  try {
+    const data = readFileSync(userDataPath, `utf8`);
+    savedInput = JSON.parse(data).input;
+  } catch {
+    writeFileSync(userDataPath, JSON.stringify({ input: `` }));
+  }
+
+  const testText = await dobbyChatCompletion([
+    { role: `user`, content: `I love you bb` },
+  ]);
+
+  const updateContextMenu = (input: string): void => {
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: `Current Input: ${input || `(empty)`}`,
+        enabled: false,
+      },
+      {
+        label: testText.choices[0].message.content,
+      },
+      { type: `separator` },
+      {
+        label: `Edit Input`,
+        click: async (): Promise<void> => {
+          const result = await dialog.showMessageBox({
+            type: "question",
+            buttons: ["Cancel", "OK"],
+            defaultId: 1,
+            title: "Input",
+            message: "Please enter your text:",
+            detail: "Additional details here",
+            // @ts-ignore it should work
+            inputField: "", // Note: This only works on macOS
+          });
+
+          console.log(result);
+        },
+      },
+      { type: `separator` },
+      { label: `Exit`, role: `quit` },
+    ]);
+
+    tray.setContextMenu(contextMenu);
+  };
+
+  tray.setToolTip(`This is my application.`);
+  updateContextMenu(savedInput);
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -57,6 +166,8 @@ app.whenReady().then(async () => {
   // });
 
   await createWindow();
+  await createGoalWindow();
+  await createTray();
 
   // Update scheduled jobs to fetch from database
   // schedule.scheduleJob(`*/30 * * * * *`, async () => {
