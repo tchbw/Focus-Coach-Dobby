@@ -1,13 +1,13 @@
 import { Button } from "@renderer/components/ui/button";
+import { DOBBY_GOAL_PROMPT, DOBBY_INITIAL_MESSAGE } from "@shared/init/prompts";
 import { useEffect, useState } from "react";
 import Typewriter from "typewriter-effect";
-import { DOBBY_INITIAL_MESSAGE, DOBBY_GOAL_PROMPT } from "@shared/init/prompts";
 
 function Goal(): React.ReactElement {
   const [input, setInput] = useState(``);
   const [isLoading, setIsLoading] = useState(false);
   const [initialMessage, setInitialMessage] = useState(``);
-  const [finalMessage, setFinalMessage] = useState(``);
+  const [finalMessage, _setFinalMessage] = useState(``);
 
   const loadInitialMessage = async (): Promise<void> => {
     setIsLoading(true);
@@ -44,27 +44,28 @@ function Goal(): React.ReactElement {
     await window.electron.ipcRenderer.invoke(`save:goal`, {
       goal: input,
     });
-    const result = await window.electron.ipcRenderer.invoke(`chat:completion`, {
-      messages: [
-        {
-          role: `system`,
-          content: DOBBY_INITIAL_MESSAGE,
-        },
-        {
-          role: `user`,
-          content: DOBBY_GOAL_PROMPT,
-        },
-        {
-          role: `assistant`,
-          content: initialMessage,
-        },
-        {
-          role: `user`,
-          content: input,
-        },
-      ],
-    });
-    setFinalMessage(result);
+    handleClose();
+    // const result = await window.electron.ipcRenderer.invoke(`chat:completion`, {
+    //   messages: [
+    //     {
+    //       role: `system`,
+    //       content: DOBBY_INITIAL_MESSAGE,
+    //     },
+    //     {
+    //       role: `user`,
+    //       content: DOBBY_GOAL_PROMPT,
+    //     },
+    //     {
+    //       role: `assistant`,
+    //       content: initialMessage,
+    //     },
+    //     {
+    //       role: `user`,
+    //       content: input,
+    //     },
+    //   ],
+    // });
+    // setFinalMessage(result);
   };
 
   const handleClose = (): void => {
@@ -80,7 +81,7 @@ function Goal(): React.ReactElement {
   }
 
   return (
-    <div className="font-round flex min-h-screen items-center justify-center bg-[#fdf8e3] p-6">
+    <div className="flex min-h-screen items-center justify-center bg-[#fdf8e3] p-6 font-round">
       <div className="space-y-6">
         <div className="text-center">
           <h1 className="text-lg font-bold text-gray-900">

@@ -44,7 +44,7 @@ ipcMain.handle(`save:goal`, async (_, { goal }) => {
   }
   setTimeout(() => {
     runWorkflow();
-  }, 10000);
+  }, 1000);
 });
 
 async function createWindow(

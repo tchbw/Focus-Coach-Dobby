@@ -32,7 +32,7 @@ function DobbyViolationPopup({
 
   return (
     <>
-      <div className="font-round flex h-screen flex-col items-center pb-12">
+      <div className="flex h-screen flex-col items-center pb-12 font-round">
         <motion.img
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -42,9 +42,9 @@ function DobbyViolationPopup({
           className="h-[360px] w-[360px] object-cover"
         />
         <div className="relative flex h-[360px] w-[720px] flex-none">
-          <div className="animate-scaleUp relative flex h-full w-full scale-0 transform flex-col items-center justify-stretch">
-            <div className="animate-blob absolute top-0 h-[75%] w-full origin-center rounded-[40%_40%_30%_30%/150%_150%_150%_150%] bg-[#fdf8e3]"></div>
-            <div className="animate-blob absolute bottom-0 h-[40%] w-[94%] origin-center rounded-[5%_5%_20%_20%/100%_100%_100%_100%] bg-[#fdf8e3]"></div>
+          <div className="relative flex h-full w-full scale-0 transform animate-scaleUp flex-col items-center justify-stretch">
+            <div className="absolute top-0 h-[75%] w-full origin-center animate-blob rounded-[40%_40%_30%_30%/150%_150%_150%_150%] bg-[#fdf8e3]"></div>
+            <div className="absolute bottom-0 h-[40%] w-[94%] origin-center animate-blob rounded-[5%_5%_20%_20%/100%_100%_100%_100%] bg-[#fdf8e3]"></div>
             <div
               className={`absolute w-full px-16 pb-8 pt-12 ${violationString.length > 180 ? "text-xl" : "text-3xl"} leading-[1.5em] text-[#807256]`}
             >
@@ -61,8 +61,8 @@ function DobbyViolationPopup({
               making a wish and see what happens! */}
             </div>
           </div>
-          <div className="animate-character absolute">
-            <div className="perspective-[2rem] rotate-x-1 -rotate-z-6 animate-fadeCharacter mr-auto inline-block -translate-y-[45%] translate-x-[20%] scale-0 transform rounded-[30%/100%_100%_120%_120%] bg-[#dd8530] px-8 py-2 text-2xl text-[#482016]">
+          <div className="absolute animate-character">
+            <div className="perspective-[2rem] rotate-x-1 -rotate-z-6 mr-auto inline-block -translate-y-[45%] translate-x-[20%] scale-0 transform animate-fadeCharacter rounded-[30%/100%_100%_120%_120%] bg-[#dd8530] px-8 py-2 text-2xl text-[#482016]">
               Dobby
             </div>
           </div>

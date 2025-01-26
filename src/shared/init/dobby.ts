@@ -67,7 +67,7 @@ export async function dobbyGoalViolation(
     { role: `system`, content: DOBBY_GOAL_PROMPT },
     {
       role: `user`,
-      content: `The user's goal is ${goal} and you discovered them sneakily doing ${distractionTask}. Get them back on track to their goal with up to 4  sentences.`,
+      content: `The user's goal is ${goal} and you discovered them sneakily doing ${distractionTask}. You are pissed off and angry at them. Be vulgar. Get them back on track to their goal with up to 3 sentences.`,
     },
   ]);
 
