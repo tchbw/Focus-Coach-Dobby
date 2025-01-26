@@ -92,7 +92,7 @@ class ScreenshotProcessor {
       });
 
       const schema = {
-        description: "List of recipes",
+        description: "Result",
         type: SchemaType.OBJECT,
         properties: {
           isDistracted: { type: SchemaType.BOOLEAN, nullable: false },
