@@ -32,7 +32,9 @@ ipcMain.handle(`save:goal`, async (_, { goal }) => {
   }
 });
 
-async function createWindow(): Promise<BrowserWindow> {
+async function createWindow(
+  onClose: () => Promise<void>
+): Promise<BrowserWindow> {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
@@ -50,6 +52,10 @@ async function createWindow(): Promise<BrowserWindow> {
 
   mainWindow.on(`ready-to-show`, () => {
     mainWindow.show();
+  });
+
+  mainWindow.on(`closed`, () => {
+    onClose();
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -151,9 +157,8 @@ app.whenReady().then(async () => {
 
   // await createWindow();
   console.log(`Starting focus coach...`);
-  const run = focusCoachWorkflow.run(`meow`).with({
+  const run = focusCoachWorkflow.run(`start`).with({
     focusObjective: `focusing on work`,
-    lastSleepCompletedAt: null,
     openDobbyWindow: createWindow,
   });
 
@@ -175,11 +180,11 @@ app.whenReady().then(async () => {
   //   });
   // });
 
-  app.on(`activate`, function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+  // app.on(`activate`, function () {
+  //   // On macOS it's common to re-create a window in the app when the
+  //   // dock icon is clicked and there are no other windows open.
+  //   if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  // });
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
